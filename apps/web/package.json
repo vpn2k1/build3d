@@ -25,6 +25,7 @@
     "zod": "3.25.76"
   },
   "devDependencies": {
+    "@dimforge/rapier3d-compat": "0.19.2",
     "@playwright/test": "1.56.1",
     "@types/node": "22.19.0",
     "@types/react": "19.2.2",

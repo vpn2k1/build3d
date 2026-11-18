@@ -59,17 +59,18 @@ export default function Editor({
     return () => r.disconnect();
   }, []);
   useEffect(() => {
+    if (size.width <= 0 || size.height <= 0) return;
     const b = bounds(p),
       s = Math.min(
-        (size.width - 100) / Math.max(1, b.maxX - b.minX),
-        (size.height - 120) / Math.max(1, b.maxZ - b.minZ),
+        Math.max(size.width / 2, size.width - 100) / Math.max(1, b.maxX - b.minX),
+        Math.max(size.height / 2, size.height - 120) / Math.max(1, b.maxZ - b.minZ),
       );
     setView({
       x: (size.width - (b.maxX - b.minX) * s) / 2 - b.minX * s,
       y: (size.height - (b.maxZ - b.minZ) * s) / 2 - b.minZ * s,
-      scale: Math.max(1, s),
+      scale: s,
     });
-  }, [p.projectId, size, zoomTick, p.image?.width, p.image?.height]);
+  }, [p.projectId, size, zoomTick, p.image?.width, p.image?.height, p.calibration.metersPerPixel]);
   useEffect(() => {
     setPoints([]);
     setCursor(null);
@@ -82,6 +83,7 @@ export default function Editor({
     const im = new window.Image();
     im.onload = () => setImage(im);
     im.src = p.image.dataUrl;
+    return () => { im.onload = null };
   }, [p.image?.dataUrl]);
   useEffect(() => {
     const key = (e: KeyboardEvent) => {
@@ -134,7 +136,8 @@ export default function Editor({
   const grid = [];
   const gx = Math.floor(-view.x / s),
     gz = Math.floor(-view.y / s);
-  for (let i = gx; i < (size.width - view.x) / s; i++)
+  const gridStep = Math.max(1, Math.ceil(8 / s));
+  for (let i = Math.ceil(gx / gridStep) * gridStep; i < (size.width - view.x) / s; i += gridStep)
     grid.push(
       <Line
         key={"x" + i}
@@ -144,7 +147,7 @@ export default function Editor({
         listening={false}
       />,
     );
-  for (let i = gz; i < (size.height - view.y) / s; i++)
+  for (let i = Math.ceil(gz / gridStep) * gridStep; i < (size.height - view.y) / s; i += gridStep)
     grid.push(
       <Line
         key={"z" + i}
@@ -197,7 +200,7 @@ export default function Editor({
               opacity={0.62}
               listening={false}
             />
-          )}{" "}
+          )}
           {f.slabs.map((sl) => (
             <Line
               key={sl.id}

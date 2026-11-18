@@ -17,7 +17,7 @@ export function detectWalls(rgba:Uint8ClampedArray,width:number,height:number,mx
     function finish(r:Run){
       const length=r.b-r.a, thickness=r.last-r.first+1;
       const along=horizontal?mx:mz, acrossScale=horizontal?mz:mx;
-      if(thickness<2||length<5*thickness||length*along<.4||thickness*acrossScale>2||walls.length>=1000)return;
+      if(length<5*thickness||length*along<.4||thickness*acrossScale>2||walls.length>=1000)return;
       const center=(r.first+r.last+1)/2*acrossScale;
       walls.push({id:"scan-"+walls.length,start:horizontal?[r.a*along,center]:[center,r.a*along],end:horizontal?[r.b*along,center]:[center,r.b*along],height:wallHeight,thickness:Math.max(.05,thickness*acrossScale),status:"detected"});
     }

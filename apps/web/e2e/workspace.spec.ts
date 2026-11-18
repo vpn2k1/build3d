@@ -1,4 +1,41 @@
 import { test, expect } from "@playwright/test";
+for (const format of ["png", "jpeg"]) {
+  test(`imports a ${format} room, builds four walls and reopens the saved project`, async ({ page }) => {
+    await page.route("http://127.0.0.1:8000/**", route => route.abort());
+    await page.goto("/");
+    const encoded = await page.evaluate(format => {
+      const canvas = document.createElement("canvas");
+      canvas.width = 240;
+      canvas.height = 180;
+      const ctx = canvas.getContext("2d")!;
+      ctx.fillStyle = "white";
+      ctx.fillRect(0, 0, 240, 180);
+      ctx.lineWidth = 4;
+      ctx.strokeRect(20, 20, 200, 140);
+      return canvas.toDataURL("image/" + format).split(",")[1];
+    }, format);
+    const upload = page.locator('input[type=file][accept*="png"]');
+    await upload.setInputFiles({ name: "room." + format, mimeType: "image/" + format, buffer: Buffer.from(encoded, "base64") });
+    const editor = page.locator(".editor-canvas.tool-scale");
+    await expect(editor.locator("canvas").first()).toBeVisible();
+    await editor.click({ position: { x: 60, y: 100 } });
+    await editor.click({ position: { x: 200, y: 100 } });
+    await page.getByLabel("Khoảng cách (m)").fill("4");
+    await page.getByRole("button", { name: "Xác nhận tỷ lệ" }).click();
+    await page.getByRole("button", { name: "Phân tích", exact: true }).click();
+    await expect(page.getByText("4 ứng viên tường")).toBeVisible();
+    await page.getByRole("button", { name: "Đưa ứng viên vào editor" }).click();
+    const tab = page.getByRole("button", { name: "Không gian 3D", exact: true });
+    if (await tab.isVisible()) await tab.click();
+    await expect(page.locator(".model-panel canvas")).toBeVisible();
+    await page.getByRole("button", { name: "Lưu dự án", exact: true }).click();
+    await expect(page.getByRole("status")).toContainText("Đã lưu");
+    await page.reload();
+    await page.getByRole("button", { name: "Dự án đã lưu" }).click();
+    await page.getByRole("button", { name: /room.*4 tường/ }).click();
+    await expect(page.getByText("Ảnh đã tải", { exact: true })).toBeVisible();
+  });
+}
 test("manual wall, properties, history, JSON and local save", async ({
   page,
 }) => {

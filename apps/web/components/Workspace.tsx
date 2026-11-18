@@ -502,6 +502,10 @@ export default function Workspace() {
         }
       }
       if (!result) throw Error("Hết thời gian chờ phân tích.");
+      if (!result.walls.length) {
+        setError("Chưa tìm thấy tường. Kiểm tra tỷ lệ và độ rõ của ảnh rồi phân tích lại, hoặc dùng công cụ Tường để vẽ.");
+        return;
+      }
       setAnalysis({ ...result, projectId: p.projectId, revision: p.revision });
       setOnline(true);
     } catch (e) {
