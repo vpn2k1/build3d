@@ -1,0 +1,631 @@
+{
+  "$defs": {
+    "Calibration": {
+      "additionalProperties": false,
+      "properties": {
+        "metersPerPixel": {
+          "exclusiveMinimum": 0,
+          "title": "Metersperpixel",
+          "type": "number"
+        },
+        "confirmed": {
+          "title": "Confirmed",
+          "type": "boolean"
+        },
+        "reference": {
+          "anyOf": [
+            {
+              "items": {
+                "maxItems": 2,
+                "minItems": 2,
+                "prefixItems": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "type": "array"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reference"
+        },
+        "distance": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Distance"
+        }
+      },
+      "required": [
+        "metersPerPixel",
+        "confirmed"
+      ],
+      "title": "Calibration",
+      "type": "object"
+    },
+    "Floor": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "elevation": {
+          "title": "Elevation",
+          "type": "number"
+        },
+        "height": {
+          "maximum": 10,
+          "minimum": 1,
+          "title": "Height",
+          "type": "number"
+        },
+        "walls": {
+          "items": {
+            "$ref": "#/$defs/Wall"
+          },
+          "maxItems": 2000,
+          "title": "Walls",
+          "type": "array"
+        },
+        "openings": {
+          "items": {
+            "$ref": "#/$defs/Opening"
+          },
+          "maxItems": 2000,
+          "title": "Openings",
+          "type": "array"
+        },
+        "rooms": {
+          "items": {
+            "$ref": "#/$defs/Room"
+          },
+          "title": "Rooms",
+          "type": "array"
+        },
+        "slabs": {
+          "items": {
+            "$ref": "#/$defs/Slab"
+          },
+          "title": "Slabs",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "elevation",
+        "height",
+        "walls",
+        "openings",
+        "rooms",
+        "slabs"
+      ],
+      "title": "Floor",
+      "type": "object"
+    },
+    "Image": {
+      "additionalProperties": false,
+      "properties": {
+        "dataUrl": {
+          "maxLength": 30000000,
+          "pattern": "^data:image/(png|jpeg);base64,",
+          "title": "Dataurl",
+          "type": "string"
+        },
+        "originalDataUrl": {
+          "anyOf": [
+            {
+              "maxLength": 30000000,
+              "pattern": "^data:image/(png|jpeg);base64,",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Originaldataurl"
+        },
+        "width": {
+          "exclusiveMinimum": 0,
+          "title": "Width",
+          "type": "integer"
+        },
+        "height": {
+          "exclusiveMinimum": 0,
+          "title": "Height",
+          "type": "integer"
+        },
+        "rotation": {
+          "title": "Rotation",
+          "type": "number"
+        },
+        "crop": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Crop"
+        }
+      },
+      "required": [
+        "dataUrl",
+        "width",
+        "height",
+        "rotation"
+      ],
+      "title": "Image",
+      "type": "object"
+    },
+    "OCRItem": {
+      "additionalProperties": false,
+      "properties": {
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "confidence": {
+          "title": "Confidence",
+          "type": "number"
+        },
+        "box": {
+          "items": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array"
+          },
+          "title": "Box",
+          "type": "array"
+        },
+        "status": {
+          "const": "detected",
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "confidence",
+        "box",
+        "status"
+      ],
+      "title": "OCRItem",
+      "type": "object"
+    },
+    "Opening": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "door",
+            "window"
+          ],
+          "title": "Type",
+          "type": "string"
+        },
+        "wallId": {
+          "title": "Wallid",
+          "type": "string"
+        },
+        "offset": {
+          "minimum": 0,
+          "title": "Offset",
+          "type": "number"
+        },
+        "width": {
+          "maximum": 10,
+          "minimum": 0.2,
+          "title": "Width",
+          "type": "number"
+        },
+        "height": {
+          "maximum": 10,
+          "minimum": 0.2,
+          "title": "Height",
+          "type": "number"
+        },
+        "sillHeight": {
+          "maximum": 10,
+          "minimum": 0,
+          "title": "Sillheight",
+          "type": "number"
+        },
+        "status": {
+          "enum": [
+            "detected",
+            "estimated",
+            "confirmed"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "wallId",
+        "offset",
+        "width",
+        "height",
+        "sillHeight",
+        "status"
+      ],
+      "title": "Opening",
+      "type": "object"
+    },
+    "Recognition": {
+      "additionalProperties": false,
+      "properties": {
+        "sourceTransform": {
+          "$ref": "#/$defs/SourceTransform"
+        },
+        "warnings": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Warnings",
+          "type": "array"
+        },
+        "ocr": {
+          "items": {
+            "$ref": "#/$defs/OCRItem"
+          },
+          "title": "Ocr",
+          "type": "array"
+        },
+        "elapsedSeconds": {
+          "minimum": 0,
+          "title": "Elapsedseconds",
+          "type": "number"
+        }
+      },
+      "required": [
+        "sourceTransform",
+        "warnings",
+        "ocr",
+        "elapsedSeconds"
+      ],
+      "title": "Recognition",
+      "type": "object"
+    },
+    "Room": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "center": {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Center",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "center"
+      ],
+      "title": "Room",
+      "type": "object"
+    },
+    "Slab": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "polygon": {
+          "items": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "type": "array"
+          },
+          "maxItems": 500,
+          "minItems": 3,
+          "title": "Polygon",
+          "type": "array"
+        },
+        "status": {
+          "enum": [
+            "detected",
+            "estimated",
+            "confirmed"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "polygon",
+        "status"
+      ],
+      "title": "Slab",
+      "type": "object"
+    },
+    "SourceTransform": {
+      "additionalProperties": false,
+      "properties": {
+        "resizeRatio": {
+          "exclusiveMinimum": 0,
+          "title": "Resizeratio",
+          "type": "number"
+        },
+        "deskewApplied": {
+          "title": "Deskewapplied",
+          "type": "boolean"
+        },
+        "estimatedSkewDegrees": {
+          "title": "Estimatedskewdegrees",
+          "type": "number"
+        },
+        "deskewMatrix": {
+          "anyOf": [
+            {
+              "items": {
+                "items": {
+                  "type": "number"
+                },
+                "type": "array"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Deskewmatrix"
+        },
+        "inverseDeskewMatrix": {
+          "anyOf": [
+            {
+              "items": {
+                "items": {
+                  "type": "number"
+                },
+                "type": "array"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Inversedeskewmatrix"
+        }
+      },
+      "required": [
+        "resizeRatio",
+        "deskewApplied",
+        "estimatedSkewDegrees"
+      ],
+      "title": "SourceTransform",
+      "type": "object"
+    },
+    "Wall": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "start": {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Start",
+          "type": "array"
+        },
+        "end": {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "End",
+          "type": "array"
+        },
+        "thickness": {
+          "maximum": 2,
+          "minimum": 0.05,
+          "title": "Thickness",
+          "type": "number"
+        },
+        "height": {
+          "maximum": 10,
+          "minimum": 1,
+          "title": "Height",
+          "type": "number"
+        },
+        "status": {
+          "enum": [
+            "detected",
+            "estimated",
+            "confirmed"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        }
+      },
+      "required": [
+        "id",
+        "start",
+        "end",
+        "thickness",
+        "height",
+        "status"
+      ],
+      "title": "Wall",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "title": "Schemaversion",
+      "type": "integer"
+    },
+    "projectId": {
+      "pattern": "^[a-zA-Z0-9_-]{1,100}$",
+      "title": "Projectid",
+      "type": "string"
+    },
+    "name": {
+      "maxLength": 100,
+      "minLength": 1,
+      "title": "Name",
+      "type": "string"
+    },
+    "unit": {
+      "const": "m",
+      "title": "Unit",
+      "type": "string"
+    },
+    "revision": {
+      "minimum": 0,
+      "title": "Revision",
+      "type": "integer"
+    },
+    "calibration": {
+      "$ref": "#/$defs/Calibration"
+    },
+    "image": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Image"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "recognition": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Recognition"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "floors": {
+      "items": {
+        "$ref": "#/$defs/Floor"
+      },
+      "maxItems": 1,
+      "minItems": 1,
+      "title": "Floors",
+      "type": "array"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "projectId",
+    "name",
+    "unit",
+    "revision",
+    "calibration",
+    "floors"
+  ],
+  "title": "Project",
+  "type": "object"
+}

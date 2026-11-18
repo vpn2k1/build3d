@@ -1,0 +1,40 @@
+{
+  "scope": "Synthetic fixtures only; not accuracy evaluation",
+  "python": "3.12.14",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "results": [
+    {
+      "fixture": "clean-floorplan.png",
+      "candidates": 7,
+      "seconds": [
+        0.092,
+        0.056,
+        0.053
+      ],
+      "deskewApplied": false,
+      "skewDegrees": 0.0
+    },
+    {
+      "fixture": "noisy-floorplan.png",
+      "candidates": 7,
+      "seconds": [
+        0.055,
+        0.055,
+        0.059
+      ],
+      "deskewApplied": false,
+      "skewDegrees": 0.0
+    },
+    {
+      "fixture": "rotated-floorplan.png",
+      "candidates": 7,
+      "seconds": [
+        0.068,
+        0.063,
+        0.065
+      ],
+      "deskewApplied": true,
+      "skewDegrees": -4.004712357564443
+    }
+  ]
+}
